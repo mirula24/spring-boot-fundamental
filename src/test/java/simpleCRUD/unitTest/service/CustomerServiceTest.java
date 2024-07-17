@@ -8,6 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -20,13 +23,13 @@ import simpleCRUD.unitTest.repository.CustomerRepository;
 import simpleCRUD.unitTest.service.implementation.CustomerImpl;
 import simpleCRUD.unitTest.util.dto.CustomerDto;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
 
 
@@ -41,6 +44,7 @@ public class CustomerServiceTest {
     private CustomerImpl customerImpl;
 
     private Customer customer;
+    private CustomerDto customerDto;
 
     @BeforeEach
     public void setUp() {
@@ -127,5 +131,87 @@ public class CustomerServiceTest {
 
         assertEquals(result.getName(), customerDto.getName());
         assertEquals(result.getBirthDate(), customerDto.getBirthDate());
+    }
+
+    @Test
+    public void NameIsNull() {
+        // given
+        customer = new Customer();
+        customer.setId(2);
+        customer.setName(null);
+        customer.setBirthDate(new Date(2000, 10, 24));
+
+        customerDto = new CustomerDto(customer.getName(), customer.getBirthDate());
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            customerImpl.create(customerDto);
+        });
+    }
+
+    @Test
+    public void nameIsEmpty() {
+        // given
+        customer = new Customer();
+        customer.setId(2);
+        customer.setName(null);
+        customer.setBirthDate(new Date(2000, 10, 24));
+
+        customerDto = new CustomerDto(customer.getName(), customer.getBirthDate());
+
+        customer.setName("");
+        customerDto.setName("");
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            customerImpl.create(customerDto);
+        });
+    }
+    @Test
+    public void wrongInputDate() {
+        customer = new Customer();
+        customer.setId(2);
+        customer.setName(null);
+        customer.setBirthDate(new Date(2000, 10, 24));
+
+        customerDto = new CustomerDto(customer.getName(), customer.getBirthDate());
+
+        // given
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date invalidDate;
+        try {
+            invalidDate = sdf.parse("24-10-2000");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        customerDto.setBirthDate(invalidDate);
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            customerImpl.create(customerDto);
+        });
+    }
+
+    @Test
+    public void customerIdNotFound(){
+        assertThrows(RuntimeException.class, () -> {
+            customerImpl.getOne(4);
+        });
+    }
+    @Test
+    public void updateCustomerWronginputdate(){
+        assertThrows(RuntimeException.class, () -> {
+            CustomerDto update = CustomerDto.builder()
+                    .name(customer.getName())
+                    .birthDate(new Date())
+                    .build();
+            customerImpl.update(2,update);
+        });
+    }
+    @Test
+    public void deleteCustomerIdNotFound(){
+        assertThrows(RuntimeException.class, () -> {
+            customerImpl.delete(4);
+        });
     }
 }

@@ -7,7 +7,7 @@ import simpleCRUD.unitTest.util.dto.TransactionDto;
 
 public interface TransactionService {
     Transaction create(TransactionDto request);
-    Page<Transaction> getAll(Pageable pageable,String name);
+    Page<Transaction> getAll(Pageable pageable,TransactionDto dto);
     Transaction getOne(Integer id);
     Transaction update(Integer id,TransactionDto request);
     void delete(Integer id);

@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 import simpleCRUD.unitTest.model.Customer;
+import simpleCRUD.unitTest.model.Transaction;
 import simpleCRUD.unitTest.repository.CustomerRepository;
 import simpleCRUD.unitTest.service.implementation.CustomerImpl;
 import simpleCRUD.unitTest.util.dto.CustomerDto;
@@ -131,6 +133,21 @@ public class CustomerServiceTest {
 
         assertEquals(result.getName(), customerDto.getName());
         assertEquals(result.getBirthDate(), customerDto.getBirthDate());
+    }
+    @Test
+    void deleteCuctumer_succes(){
+        when(customerRepository.findById(customer.getId()))
+                .thenReturn(Optional.of(customer))
+                .thenReturn(Optional.empty());
+        doNothing().when(customerRepository).delete(customer);
+
+        customerImpl.delete(customer.getId());
+
+        verify(customerRepository).findById(customer.getId());
+        verify(customerRepository).delete(customer);
+
+        Optional<Customer> deleteTransaction = customerRepository.findById(customer.getId());
+        assertThat(deleteTransaction).isEmpty();
     }
 
     @Test

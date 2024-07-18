@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -68,6 +67,26 @@ public class TransactionServiceTest {
         MockitoAnnotations.openMocks(this);
 
     }
+//    @Test
+//    void getAllTransaction() {
+//        when(transactionRepository.findAll()).thenReturn(transaction);
+//
+//        List<Transaction> foundTransactions = transactionImplementation.getAll();
+//
+//        assertEquals(transaction, foundTransactions);
+//        verify(transactionRepository, times(1)).findAll();
+//    }
+
+    @Test
+    void getTransactionById() {
+        when(transactionRepository.findById(any(Integer.class)))
+                .thenReturn(Optional.of(transaction));
+
+        Transaction foundTransaction = transactionImplementation.getOne(1);
+
+        assertEquals(transaction, foundTransaction);
+        verify(transactionRepository, times(1)).findById(any(Integer.class));
+    }
     @Test
     void create_transaction_success_test(){
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
@@ -75,6 +94,7 @@ public class TransactionServiceTest {
         Transaction result = transactionImplementation.create(transactionDto);
 
         assertEquals(transaction, result);
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
     }
 
 

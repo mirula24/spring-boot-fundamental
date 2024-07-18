@@ -2,12 +2,12 @@ package simpleCRUD.unitTest.controller;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import simpleCRUD.unitTest.service.TransactionService;
+import simpleCRUD.unitTest.util.dto.AlphaDto;
+import simpleCRUD.unitTest.util.dto.MetaDataDto;
 import simpleCRUD.unitTest.util.dto.ToDo;
 import simpleCRUD.unitTest.util.dto.TransactionDto;
 
@@ -40,6 +40,10 @@ public class TransactionController {
     @GetMapping("/alpha")
     public String getFromAlpha(){
         return transactionService.getFromAlphavantage();
+    }
+    @GetMapping("/alphadto")
+    public AlphaDto getDtoFromAlpha(){
+        return transactionService.getDtoFromAlphavantage();
     }
 
     @DeleteMapping("/{id}")

@@ -6,26 +6,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-import simpleCRUD.unitTest.model.Customer;
 import simpleCRUD.unitTest.model.Transaction;
-import simpleCRUD.unitTest.repository.CustomerRepository;
 import simpleCRUD.unitTest.repository.TransactionRepository;
 import simpleCRUD.unitTest.service.CustomerService;
 import simpleCRUD.unitTest.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import simpleCRUD.unitTest.util.dto.AlphaDto;
 import simpleCRUD.unitTest.util.dto.ToDo;
 import simpleCRUD.unitTest.util.dto.TransactionDto;
 import simpleCRUD.unitTest.util.specification.GeneralSpecification;
 
-import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +60,19 @@ public class TransactionImplementation implements TransactionService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<String>() {});
 
+    }
+
+    @Override
+    public AlphaDto getDtoFromAlphavantage() {
+        String uri = UriComponentsBuilder.fromHttpUrl("https://www.alphavantage.co/query")
+                .queryParam("function", "TIME_SERIES_DAILY")
+                .queryParam("symbol", "IBM")
+                .queryParam("apikey", "ZDTH89D9LOW3Z8DQ")
+                .toUriString();
+        return restClient.get()
+                .uri(uri)
+                .retrieve()
+                .body(new ParameterizedTypeReference<AlphaDto>() {});
     }
 
     @Override
